@@ -20,7 +20,7 @@ Then test the code with
 
 ### Code Structure
 
-In addition to what you learned in the previous homework, this homework introduces 3D graphics on the web, spatial data, and the use of multiple coordinated views (which can be coordinated via brushing and linking etc.). By default, our template code sets up the window with a basic THREE.js convas, a basic D3 canvas, a color legend, and code for loading and passing variables for the linked view. 
+In addition to what you learned in the previous homework, this homework introduces 3D graphics on the web, spatial data, and the use of multiple coordinated views (which can be coordinated via brushing and linking etc.). By default, our template code sets up the window with a basic THREE.js canvas, a basic D3 canvas, a color legend, and code for loading and passing variables for the linked view. 
 
 
 Our code changes the brushing plane position variable "brushedCoord" when the user uses the arrow keys by default. You will need to add code to draw the particle pointcloud in Three.js and the linked cross-section in d3.
