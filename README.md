@@ -26,12 +26,12 @@ Our code changes the brushing plane position variable "brushedCoord" when the us
  * LinkedViewD3 contains the template for the linked view that is supposed to show a 2-dimensional cross section of the particles
  * ColorLegend.js contains code for the color legend for the LinkedView. Editing it is optional unless you change the color scheme
 
- Since we use brushing, there are some features in the high-level App that are shared between features. When called in LinkedViewD3 and Patricle3D we add "props." to access it.
+ Since we use brushing, there are some features in the high-level App that are shared between features. When called in LinkedViewD3 and Patricle3D we add "props." (e.g.props.brushedCoord) to access it.
 
- * brushedCoord: the coordinate in the given plane (defaults to zy plane) that we want to brush. Is passed to LinkedViewD3 and Particle3D as props.brushedCoord to allow us to brush
+ * brushedCoord: the coordinate in the given plane (defaults to zy plane) that we want to brush. 
  * brushedAxis: the plane we are slicing. 'x' is the zy plane, 'y' is the zx plane, etc. By default this is set to 'x' and can be ignored, unless you set "allowAxisToggle=false;" for extra credit
  * bounds: the dimensional bounds ({minX, maxX, minY, maxY, minZ, maxZ}) of the particle system. Passed to props so we can scale the visualizations
- * getBrushedCoord: function that takes a particle and returns the position in the axis that we are slicing for the cross-section based on brushedAxis and bounds. makes it easier to check if the particle is in the plane we are slicing through.
+ * getBrushedCoord: function that takes a data point object for a particle and returns the position in the axis that we are slicing for the cross-section based on brushedAxis and bounds. makes it easier to check if the particle is in the plane we are slicing through.
  * brushedAreaThickness: a constant used to set the width of the area that we are considering for the cross-section plane. Larger values are easier to see in the Three.JS view but yield higher occusion in the D3 view.
 
 
