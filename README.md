@@ -1,4 +1,6 @@
 # Instructions
+Credits: The support code in this repo has been created by Andrew Wentzel, a member of the Electronic Visualization Laboratory, as teaching support for UIC's CS529 Visual Data Science course.
+
 
 ### Installation
 
@@ -18,7 +20,9 @@ Then test the code with
 
 ### Code Structure
 
-By default, our template code sets up the window with a basic THREE.js convas, a basic D3 canvas, a color legend, and code for loading and passing variables for the linked view
+In addition to what you learned in the previous homework, this homework introduces 3D graphics on the web, spatial data, and the use of multiple coordinated views (which can be coordinated via brushing and linking etc.). By default, our template code sets up the window with a basic THREE.js convas, a basic D3 canvas, a color legend, and code for loading and passing variables for the linked view. 
+
+
 Our code changes the brushing plane position variable "brushedCoord" when the user uses the arrow keys by default. You will need to add code to draw the particle pointcloud in Three.js and the linked cross-section in d3.
 
  * App.js contains the high-level app with the high-level code strucutre
@@ -46,11 +50,11 @@ Our code changes the brushing plane position variable "brushedCoord" when the us
 
 ### Note
 
-This code introduces THREE.js, documentation can be found here: 
+This code introduces THREE.js, a cross-browser JavaScript library and application programming interface (API) used to create and display animated 3D computer graphics in a web browser via webGL. The THREE.js documentation can be found here: 
 
 https://threejs.org/docs/index.html#manual/en/introduction/Creating-a-scene
 
-Which we have integrated with react using refs. There is a popular library meant to turn threejs into react components if you wish to do that in later projects, which requires less template code: 
+We have integrated three.js with react using refs. There is also a popular library named react-three-fiber which is meant to turn threejs into react components if you wish to do that in later projects. Fiber requires less template code: 
 
 https://docs.pmnd.rs/react-three-fiber/getting-started/introduction
 
