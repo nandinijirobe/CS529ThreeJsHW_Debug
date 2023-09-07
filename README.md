@@ -8,8 +8,12 @@ Installation is the same as in Homework 1. Install the required modules (d3 and 
 
 > npm install
 
-or (if making a repo from scratch)
+and then test the code with 
 
+> npm start
+
+## If making a repo from scratch
+Instead of the above, do
 > npm install d3
 
 and then
