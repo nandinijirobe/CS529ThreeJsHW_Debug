@@ -11,7 +11,8 @@ Installation is the same as in Homework 1. Install the required modules (d3 and 
 or (if making a repo from scratch)
 
 > npm install d3
->
+
+and then
 
 > npm install three
 
