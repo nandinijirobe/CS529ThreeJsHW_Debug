@@ -32,12 +32,12 @@ In addition to what you learned in the previous homework, this homework introduc
 
 Our code changes the brushing plane position variable "brushedCoord" when the user uses the arrow keys by default. You will need to add code to draw the particle pointcloud in Three.js and the linked cross-section in d3.
 
- * App.js contains the high-level app with the high-level code strucutre
- * Particle3D.js contains the code to run the THREE.js pointcloud. It sets up the required code to render anything you add to the scene with scene.add
- * LinkedViewD3 contains the template for the linked view that is supposed to show a 2-dimensional cross section of the particles
- * ColorLegend.js contains code for the color legend for the LinkedView. Editing it is optional unless you change the color scheme
+ * App.js contains the high-level app with the high-level code strucutre. You will need to modify this file to add titles.
+ * Particle3D.js contains the code to run the THREE.js pointcloud. It sets up the required code to render anything you add to the scene with scene.add. You will need to modify this file.
+ * LinkedViewD3 contains the template for the linked view that is supposed to show a 2-dimensional cross section of the particles. You will need to modify this file.
+ * ColorLegend.js contains code for the color legend for the LinkedView. Editing this file is optional unless you wish to change the color scheme.
 
- Since we use brushing, there are some features in the high-level App that are shared between features. When called in LinkedViewD3 and Patricle3D we add "props." (e.g.props.brushedCoord) to access it.
+ Since we use brushing to link the view, there are objects (e.g., particles) in the high-level App that are shared between views. To access these objects from the views (e.g., in LinkedViewD3 and in Patricle3D), we use "props." (e.g.props.brushedCoord) to access that object (e.g., in this case, the coordinates of the particles being brushed by the cutting plane).
 
  * brushedCoord: the coordinate in the given plane (defaults to zy plane) that we want to brush. 
  * brushedAxis: the plane we are slicing. 'x' is the zy plane, 'y' is the zx plane, etc. By default this is set to 'x' and can be ignored, unless you set "allowAxisToggle=false;" for extra credit
