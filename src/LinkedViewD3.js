@@ -2,6 +2,8 @@ import React, {useEffect, useRef} from 'react';
 import useSVGCanvas from './useSVGCanvas.js';
 import * as d3 from 'd3';
 
+
+//example function/code for making a custom glyph
 function makeVelocityGlyph(d,axis,scale=1){
     var xv = d.velocity[1];
     var yv = d.velocity[2];
@@ -72,10 +74,10 @@ export default function LinkedViewD3(props){
 
             let colorScale = d3.scaleLinear()
                 .domain(d3.extent(data,getY))
-                .range(props.colorRange)
+                .range(props.colorRange);
 
+            //TODO: map the color of the glyph to the particle concentration instead of the particle height
             let dots = svg.selectAll('.glyph').data(data)
-            // .remove();
             dots.enter().append('path')
                 .attr('class','glyph')
                 .merge(dots)
