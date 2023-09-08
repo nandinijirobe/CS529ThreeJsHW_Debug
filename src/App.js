@@ -30,12 +30,15 @@ function App() {
   async function fetchData(){
     d3.csv('particledata_058.csv').then(d=>{
       let newData = [];
+      var i = 0;
       for(const obj of d){
         let entry = {}
         entry.position = [obj.Points0,obj.Points1,obj.Points2].map(dd=>parseFloat(dd));
         entry.velocity = [obj.velocity0,obj.velocity1,obj.velocity2].map(dd=>parseFloat(dd));
         entry.concentration = Number(obj.concentration);
-        newData.push(entry)
+        entry.id = i;
+        newData.push(entry);
+        i+=1;
       }
       console.log('particle data',newData)
       setParticleData(newData);
@@ -62,9 +65,9 @@ function App() {
       console.log('e',e)
       e.preventDefault();
       if(e.keyCode === 38){
-          incrementBrush(.5)
+          incrementBrush(.1)
       } else if(e.keyCode=== 40){
-          incrementBrush(-.5);
+          incrementBrush(-.1);
       }
   }
 
@@ -83,13 +86,13 @@ function App() {
                 // get the min bounds
                 const p = d.position
                 bounds.minX = Math.min(bounds.minX || Infinity, p[0]);
-                bounds.minY = Math.min(bounds.minY || Infinity, p[1]);
-                bounds.minZ = Math.min(bounds.minZ || Infinity, p[2]);
+                bounds.minY = Math.min(bounds.minY || Infinity, p[2]);
+                bounds.minZ = Math.min(bounds.minZ || Infinity, p[1]);
 
                 // get the max bounds
                 bounds.maxX = Math.max(bounds.maxX || -Infinity, p[0]);
-                bounds.maxY = Math.max(bounds.maxY || -Infinity, p[1]);
-                bounds.maxZ = Math.max(bounds.maxY || -Infinity, p[2]);
+                bounds.maxY = Math.max(bounds.maxY || -Infinity, p[2]);
+                bounds.maxZ = Math.max(bounds.maxZ || -Infinity, p[1]);
 
         bounds.maxC = Math.max(bounds.maxC || -Infinity, d.concentration);
             });

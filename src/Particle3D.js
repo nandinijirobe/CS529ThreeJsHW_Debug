@@ -106,6 +106,10 @@ export default function Particle3D(props){
             //for centering the y valus at the center of the cylinder
             const centerY = ((bounds.maxY - bounds.minY)/2);
 
+
+            //TODO (optional): filter out particles below 80% of the maximum concentration here
+
+
             //get positions for particle positions
             //THREE.js buffer attributes uses a 1d vector of length n_items x item_dimensions
             //e.g. [x0,y0,z0,x1,y1,z1,x2 ....]
@@ -186,6 +190,8 @@ export default function Particle3D(props){
             return color
         }
 
+        //TODO (optional): filter out particles below 80% of the maximum concentration here
+        
         //vertex colors as a 1d vector
         var vertexColors = [];
         for(var d of props.data){

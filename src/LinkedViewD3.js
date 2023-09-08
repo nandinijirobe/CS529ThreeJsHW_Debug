@@ -3,7 +3,9 @@ import useSVGCanvas from './useSVGCanvas.js';
 import * as d3 from 'd3';
 
 
+//TODO: modify this to make a new glyph that captures both the in-plane velocity and concentration
 //example function/code for making a custom glyph
+//d is the data point {position, velocity,concentration}, axis is ['x','y','z'], scale is optional value to pass to help scale the object size
 function makeVelocityGlyph(d,axis,scale=1){
     var xv = d.velocity[1];
     var yv = d.velocity[2];
@@ -13,7 +15,6 @@ function makeVelocityGlyph(d,axis,scale=1){
     } else if(axis == 'z'){
         xv = d.velocity[0];
     }
-    let magnitude = Math.sqrt(xv**2 + yv**2);
 
     let xpos = xv/scale
     let ypos = yv/scale
@@ -21,7 +22,6 @@ function makeVelocityGlyph(d,axis,scale=1){
         + -ypos/3 + ',' + xpos/3 + ' '
         + ypos/3 + ',' + -xpos/3 + 'z'
     return path;
-    //limit th
 }
 
 export default function LinkedViewD3(props){
@@ -35,13 +35,24 @@ export default function LinkedViewD3(props){
     
     //draw the points in the brushed area
     useEffect(()=>{
-        if(svg !== undefined & props.data !== undefined){
+        if(svg !== undefined & props.data !== undefined & props.bounds !== undefined){
             //filter data by particles in the brushed region
             const bDist = d => props.brushedCoord - props.getBrushedCoord(d);
             function isBrushed(d){
                 return Math.abs(bDist(d)) < props.brushedAreaThickness;
             }
             var data = props.data.filter(isBrushed);
+
+            const bounds = props.bounds;
+            console.log('bounds',bounds)
+            var xExtents = [bounds.minZ, bounds.maxZ];
+            var yExtents = [bounds.minY, bounds.maxY];
+            if(props.brushedAxis === 'y'){
+                xExtents = [bounds.minX, bounds.maxX];
+                yExtents = [bounds.minZ, bounds.maxZ];
+            } else if(props.brushedAxis === 'z'){
+                xExtents = [bounds.minX, bounds.maxX];
+            }
 
             var getX = d => d.position[1];
             var getY = d => d.position[2];
@@ -51,6 +62,10 @@ export default function LinkedViewD3(props){
             } else if(props.brushedAxis == 'z'){
                 getX = d => d.position[0];
             }
+
+            //TODO: filter out points with a concentration of less than 80% of the maximum value of the current filtered datapoints
+
+
             //limit the data to a maximum size to prevent occlusion
             data.sort((a,b) => bDist(a) - bDist(b));
             if(data.length > maxDots){
@@ -65,19 +80,21 @@ export default function LinkedViewD3(props){
 
             //scale the data by the x and z positions
             let xScale = d3.scaleLinear()
-                .domain(d3.extent(data,getX))
+                .domain(xExtents)
                 .range([margin+radius,width-margin-radius])
 
             let yScale = d3.scaleLinear()
-                .domain(d3.extent(data,getY))
+                .domain(yExtents)
                 .range([height-margin-radius,margin+radius])
 
             let colorScale = d3.scaleLinear()
-                .domain(d3.extent(data,getY))
+                .domain(yExtents)
                 .range(props.colorRange);
 
+            
+
             //TODO: map the color of the glyph to the particle concentration instead of the particle height
-            let dots = svg.selectAll('.glyph').data(data)
+            let dots = svg.selectAll('.glyph').data(data,d=>d.id)
             dots.enter().append('path')
                 .attr('class','glyph')
                 .merge(dots)
@@ -90,7 +107,7 @@ export default function LinkedViewD3(props){
 
             dots.exit().remove()
         }
-    },[svg,props.data,props.getBrushedCoord])
+    },[svg,props.data,props.getBrushedCoord,props.bounds])
 
     
     return (
