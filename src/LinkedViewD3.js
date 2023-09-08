@@ -15,7 +15,6 @@ export default function LinkedViewD3(props){
     useEffect(()=>{
         if(svg !== undefined & props.data !== undefined){
             //filter data by particles in the brushed region
-            //getBrushedCoord gets the data point at the coordinate 
             const bDist = d => props.brushedCoord - props.getBrushedCoord(d);
             function isBrushed(d){
                 return Math.abs(bDist(d)) < props.brushedAreaThickness;
@@ -28,16 +27,41 @@ export default function LinkedViewD3(props){
                 data = data.slice(0,maxDots);
             }
 
-            //TODO: Edit radius
             //custom radius based on number of particles
             const radius = Math.max(3*Math.min(width,height)/data.length,5);
 
-            //todo (optional): edit the change color scale. will also need to update in ColorLegend.JS
+            //scale the data by the x and z positions
+            let xScale = d3.scaleLinear()
+                .domain(d3.extent(data,a=>a.position[0]))
+                .range([margin+radius,width-margin-radius])
+
+            let yScale = d3.scaleLinear()
+                .domain(d3.extent(data,d=>d.position[1]))
+                .range([height-margin-radius,margin+radius])
+
             let colorScale = d3.scaleSymlog()
                 .domain([0,props.bounds.maxC])
                 .range(props.colorRange);
+            
 
-            //TODO: Add code to draw the points
+            //this updates the data while gradually transitioning the color changes
+            //.transition can move earlier if you also want to show the dots moving
+            let dots = svg.selectAll('.dot').data(data);
+            dots.enter()
+                .append('circle')
+                .attr('class','dot')
+                .merge(dots)
+                .attr('cx',d=>xScale(d.position[0]))
+                .attr('cy',d=>yScale(d.position[1]))
+                .transition(500)
+                .attr('r',radius)
+                .attr('fill',d=>colorScale(d.concentration))
+                .attr('stroke','black')
+                .attr('strokeWidth',.1)
+                .attr('opacity',.5);
+
+            //remove any extra points
+            dots.exit().remove();
         
         }
     },[svg,props.data,props.getBrushedCoord])

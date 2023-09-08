@@ -66,7 +66,7 @@ export default function Particle3D(props){
             antialias: true,
             alpha: true
         });
-        //TODO: change background color to not be grey
+        //background color
         renderer.setClearColor(0xFFFFFF, 1);
         renderer.setPixelRatio(window.devicePixelRatio);
         renderer.setSize(width, height)
@@ -94,7 +94,6 @@ export default function Particle3D(props){
 
 
 
-    //TODO: add code here to set up the point cloud and planes
     //create the scene with the pointcloud when the data loads
     //this should run once when the data loads
     useEffect(()=>{
@@ -107,40 +106,124 @@ export default function Particle3D(props){
             //for centering the y valus at the center of the cylinder
             const centerY = ((bounds.maxY - bounds.minY)/2);
 
-            //TODO: set us the particle system + cross-section plane and add it to the scene with s.add(...)
-            //Hint: use a THREE.Points object and modify the geometry based on the data positions
-    
-            ///
+            //get positions for particle positions
+            //THREE.js buffer attributes uses a 1d vector of length n_items x item_dimensions
+            //e.g. [x0,y0,z0,x1,y1,z1,x2 ....]
+            var vertices = [];
+            for(var d of props.data){
+                vertices.push(d.position[0])
+                vertices.push(d.position[2]-centerY);
+                vertices.push(d.position[1]);
+            }
+            //specify item_dimenstions when creating the attribute
+            var verts = new THREE.BufferAttribute(new Float32Array(vertices),3);
 
-            //TODO: give the pointcloud and plane names with e.g. pointcloud.name = 'pointcloud' so we can access them with scene.getObjectByName later
-            //then add the them to the scene with s.add(...)
+            var pointGeometry = new THREE.BufferGeometry();
+            //set a name so we can access the points it in the brushing update
+            pointGeometry.name = 'pointGeometry';
+            pointGeometry.setAttribute('position',verts);
 
+            //sizee is size of particles, vertexColors and transparent lets us change the color and alpha of individual points
+            var pointMaterial = new THREE.PointsMaterial({
+                size: relativePointSize*width/props.data.length,
+                vertexColors: true,
+                transparent: true,
+            });
 
+            var pointCloud = new THREE.Points( pointGeometry, pointMaterial );
+            pointCloud.name = "pointCloud";
+            s.add(pointCloud);
+
+            //draw a plane to show where we're brushing
+            var radius = (bounds.maxX - bounds.minX)/2.0 + .1;
+            var planeGeometry = new THREE.PlaneGeometry(2*radius + 1, 2*radius + 1);
+            var planeMaterial = new THREE.MeshBasicMaterial({
+                color: 0xcccccc,
+                opacity: .5,
+                transparent: true
+            });
+            var plane = new THREE.Mesh(planeGeometry, planeMaterial);
+            plane.name = "filterPlane";
+            //add plane to scene
+            s.add(plane);
             setScene(s);
         }
     },[camera,props.data]);
 
     //render the colors for the scene pointclouds when the brushedCoord value updates
-    //this should run each time a brushing parameter changes (position or axis)
+    //this should run each time a brushing parameter changes
     useEffect(()=>{
         if(scene === undefined| props.data === undefined){ return }
 
         const bounds = props.bounds;
+
+        //color for brushed points
+        const saturatedColorScale = d3.scaleSymlog()
+            .domain([0,bounds.maxC])
+            .range(props.colorRange);
+        //color for unbrushed points
+        const desaturatedColorScale = d3.scaleSymlog()
+            .domain([0,bounds.maxC])
+            .range(['#d9d9d9','#252525']);
 
         //check if points are withing a set distance of the center of the brush plane
         function isBrushed(d){
             var dist = props.brushedCoord - props.getBrushedCoord(d);
             return Math.abs(dist) < props.brushedAreaThickness;
         }
-        //TODO: Add code to update the plane + colors when brushing happens
-        //Hint: access the pointcloud geometry and update the color attribute based on if the point is brushed
-        //e.g. scene.getObjectByName('pointcloud').geometry.setAttribute('color',colors)
-        //Then update the position of the plane cross-section with scene.getObjectByName('plane').position = ...
-        
+
+        //calculate the color for a point in the for [r,g,b,alpha] for threejs
+        function getColor(d){
+            let alpha = 1;
+            var c = saturatedColorScale(d.concentration);
+            if(!isBrushed(d)){
+                alpha = unbrushedOpacity;
+                c = desaturatedColorScale(d.concentration);
+            }
+            c = d3.color(c);
+            //three js uses r,g,b,a
+            let color = [c.r/255,c.g/255,c.b/255,alpha];
+            return color
+        }
+
+        //vertex colors as a 1d vector
+        var vertexColors = [];
+        for(var d of props.data){
+            var color = getColor(d);
+            vertexColors.push(...color);
+        }
+
+        //specify that we use 4 dimensions (r,g,b,a) in the constructor
+        var colors = new THREE.BufferAttribute(new Float32Array(vertexColors),4);
+        //update the pointcloud colors
+        scene.getObjectByName('pointCloud').geometry.setAttribute('color',colors);
+        scene.getObjectByName('pointCloud').geometry.colorsNeedUpdate = true;
+
+        //move the feature plane to the new brush location
+        var fplane = scene.getObjectByName('filterPlane');
+        let coords = ['x','y','z']
+        for(let c of coords){
+            if(c === props.brushedAxis){
+                fplane.position[c] = props.brushedCoord;
+            } else{
+                fplane.position[c] = 0;
+                fplane.rotation[c] = 0;
+            }
+        }
+        if(props.brushedAxis === 'y'){     
+            fplane.rotation.y = 0;
+            fplane.rotation.x = -Math.PI/2;
+        } else if(props.brushedAxis === 'x'){
+            fplane.rotation.y = Math.PI/2;
+            fplane.rotation.x = 0
+        } else{
+            fplane.rotation.y =0;
+            fplane.rotation.x = 0;
+        }
     },[scene,props.brushedCoord,props.brushedAxis])
 
     
-    //main animate loop
+    //main anime loop
     useEffect(() => {
         if(!renderer || !scene || !camera){ 
             return; 
