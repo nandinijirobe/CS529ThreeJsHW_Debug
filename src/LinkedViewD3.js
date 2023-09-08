@@ -70,41 +70,23 @@ export default function LinkedViewD3(props){
                 .domain(d3.extent(data,getY))
                 .range([height-margin-radius,margin+radius])
 
-            let colorScale = d3.scaleSymlog()
-                .domain([0,props.bounds.maxC])
-                .range(props.colorRange);
-            
+            let colorScale = d3.scaleLinear()
+                .domain(d3.extent(data,getY))
+                .range(props.colorRange)
 
-            //this updates the data while gradually transitioning the color changes
-            //.transition can move earlier if you also want to show the dots moving
-            // let dots = svg.selectAll('.dot').data(data);
-            // dots.enter()
-            //     .append('circle')
-            //     .attr('class','dot')
-            //     .merge(dots)
-            //     .attr('cx',d=>xScale(getX(d)))
-            //     .attr('cy',d=>yScale(getY(d)))
-            //     .transition(500)
-            //     .attr('r',radius)
-            //     .attr('fill',d=>colorScale(d.concentration))
-            //     .attr('stroke','black')
-            //     .attr('strokeWidth',.1)
-            //     .attr('opacity',.5);
-
-
-            //remove any extra points
-            // dots.exit().remove();
-
-            svg.selectAll('.glyph').remove();
-            svg.selectAll('.glyph').data(data)
-                .enter().append('path')
+            let dots = svg.selectAll('.glyph').data(data)
+            // .remove();
+            dots.enter().append('path')
                 .attr('class','glyph')
+                .merge(dots)
+                .transition(100)
                 .attr('d', d => makeVelocityGlyph(d,props.brushedAxis,.25*vMax/radius))
-                .attr('fill',d=>colorScale(d.concentration))
+                .attr('fill',d=>colorScale(getY(d)))
                 .attr('stroke','black')
                 .attr('stroke-width',.1)
                 .attr('transform',d=>'translate(' + xScale(getX(d)) + ',' + yScale(getY(d)) + ')');
 
+            dots.exit().remove()
         }
     },[svg,props.data,props.getBrushedCoord])
 
