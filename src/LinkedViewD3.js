@@ -98,7 +98,7 @@ export default function LinkedViewD3(props){
             // dots.exit().remove();
 
 
-            //TODO: map the color of the glyph to the concentration
+            //TODO: map the color of the glyph to the particle concentration instead of the particle height
             svg.selectAll('.glyph').remove();
             svg.selectAll('.glyph').data(data)
                 .enter().append('path')
