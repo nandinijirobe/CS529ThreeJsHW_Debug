@@ -104,7 +104,7 @@ export default function LinkedViewD3(props){
                 .attr('stroke','black')
                 .attr('stroke-width',.1)
                 .attr('transform',d=>'translate(' + xScale(getX(d)) + ',' + yScale(getY(d)) + ')');
-        
+
         }
     },[svg,props.data,props.getBrushedCoord])
 
