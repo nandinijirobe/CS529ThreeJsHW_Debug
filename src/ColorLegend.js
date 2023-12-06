@@ -19,7 +19,7 @@ export default function ColorLegend(props){
 
 
             //TODO (optional) change the color scale to match changes to scale in LinkedViewD3.js
-            let colorScale = d3.scaleSymlog()
+            let colorScale = d3.scaleLinear()
                 .domain([0,props.bounds.maxC])
                 .range(props.colorRange);
 
