@@ -103,11 +103,13 @@ export default function Particle3D(props){
 
             //the extents of the data
             const bounds = props.bounds;
+            
             //for centering the y valus at the center of the cylinder
             const centerY = ((bounds.maxY - bounds.minY)/2);
 
 
             //TODO (optional): filter out particles below 80% of the maximum concentration here
+            
 
 
             //get positions for particle positions
@@ -139,7 +141,9 @@ export default function Particle3D(props){
             s.add(pointCloud);
 
             //draw a plane to show where we're brushing
+            console.log(bounds);
             var radius = (bounds.maxX - bounds.minX)/2.0 + .1;
+            console.log("plane radius",radius);
             var planeGeometry = new THREE.PlaneGeometry(2*radius + 1, 2*radius + 1);
             var planeMaterial = new THREE.MeshBasicMaterial({
                 color: 0xcccccc,
@@ -165,6 +169,10 @@ export default function Particle3D(props){
         const saturatedColorScale = d3.scaleSymlog()
             .domain([0,bounds.maxC])
             .range(props.colorRange);
+
+        console.log(props.colorRange);
+        console.log(saturatedColorScale(10));
+
         //color for unbrushed points
         const desaturatedColorScale = d3.scaleSymlog()
             .domain([0,bounds.maxC])
@@ -184,10 +192,12 @@ export default function Particle3D(props){
                 alpha = unbrushedOpacity;
                 c = desaturatedColorScale(d.concentration);
             }
-            c = d3.color(c);
-            //three js uses r,g,b,a
-            let color = [c.r/255,c.g/255,c.b/255,alpha];
-            return color
+            // c = d3.color(c);
+            // //three js uses r,g,b,a
+            // let color = [c.r/255,c.g/255,c.b/255,alpha];
+            // return color
+            const temp = d3.color(c)
+            return temp? [temp.r/255, temp.g/255, temp.b/255, alpha] : [0,0,0, alpha];
         }
 
         //TODO (optional): filter out particles below 80% of the maximum concentration here
